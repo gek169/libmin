@@ -105,7 +105,7 @@ LIBMIN_FUNC_ATTRIBS void mstrncpy(char* d, const char* s, LIBMIN_UINT n){
 		d++;
 		n--;
 	}
-	*d = 0;
+	if(n)*d = 0;
 }
 #endif
 
