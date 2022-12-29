@@ -450,14 +450,15 @@ LIBMIN_FUNC_ATTRIBS void mftoa(char* dest, float value, LIBMIN_UINT after_decima
 			pow /= 10; /*Divide pow by 10.*/
 		}
 		/*Now print the insignificant portion.*/
-		if(value == 0) goto end;
+		if(value == 0) {goto end;}
 		*dest = '.';dest++;
-		while(value > 0 && after_decimal){
-			LIBMIN_INT temp = value/pow; /*if we had the number 137, we would have gotten
-			100 as our pow. We now divide by it to get the highest digit.*/
+		pow = 10;
+		while( (value > 0) && after_decimal){
+			LIBMIN_INT temp = value*pow;
 			*dest = ( (LIBMIN_INT)temp + ('0')); dest++;
-			value = value - ((LIBMIN_FLOAT)temp * (LIBMIN_FLOAT)pow); /*Get rid of the highest digit.*/
-			pow /= 10; /*Divide pow by 10.*/
+			/*This produces floating point precision problems (?)*/
+			value = value - ((LIBMIN_FLOAT)temp / (LIBMIN_FLOAT)pow);
+			pow *= 10; /*Divide pow by 10.*/
 			after_decimal--;
 		}
 	}
@@ -467,6 +468,16 @@ LIBMIN_FUNC_ATTRIBS void mftoa(char* dest, float value, LIBMIN_UINT after_decima
 }
 /*
 	END OF FLOATING POINT UNIT STUFF!!!!
+	1
+	10
+	10.1
+	10.50379
+	-5.1
+	-0.00001
+
+	0.0000002579 -> 2.579e-7
+
+	250000 -> 2.5e5
 */
 #endif
 
