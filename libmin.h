@@ -452,15 +452,15 @@ LIBMIN_FUNC_ATTRIBS void mftoa(char* dest, float value, LIBMIN_UINT after_decima
 		/*Now print the insignificant portion.*/
 		if(value == 0) {goto end;}
 		*dest = '.';dest++;
-		pow = 10;
-		while( (value > 0) && after_decimal){
-			LIBMIN_INT temp = value*pow;
+		{LIBMIN_UINT i=0;while(i<after_decimal){
+			LIBMIN_INT temp;
+			value *= 10;
+			temp = value;
 			*dest = ( (LIBMIN_INT)temp + ('0')); dest++;
-			/*This produces floating point precision problems (?)*/
-			value = value - ((LIBMIN_FLOAT)temp / (LIBMIN_FLOAT)pow);
-			pow *= 10; /*Divide pow by 10.*/
-			after_decimal--;
-		}
+			value -= temp;
+			i++;
+		}}
+		/*Write the number out.*/
 	}
 	end:;
 	*dest = '\0'; return;
