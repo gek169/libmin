@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 #define LIBMIN_MODE_HEADER
-#define LIBMIN_FLOAT double
+#define LIBMIN_FLOAT float
 #include "libmin.h"
 
 
