@@ -357,6 +357,37 @@ LIBMIN_FUNC_ATTRIBS void mitoa_hex(char* dest, LIBMIN_INT value, char do_prefix)
 }
 #endif
 
+
+#ifdef LIBMIN_MODE_HEADER
+LIBMIN_FUNC_ATTRIBS LIBMIN_INT mpowi(LIBMIN_INT x, LIBMIN_INT y);
+#else
+LIBMIN_FUNC_ATTRIBS LIBMIN_INT mpowi(LIBMIN_INT x, LIBMIN_INT y)
+{
+	LIBMIN_INT r = 1;
+	if(y == 0) return 1;
+	if(y>1)for(;y>0;y--) r*=x;
+	if(y<0)for(;y<0;y++) r/=x;
+	return r;
+}
+#endif
+
+
+#ifdef LIBMIN_MODE_HEADER
+LIBMIN_FUNC_ATTRIBS LIBMIN_UINT msqrti(LIBMIN_UINT x);
+#else
+LIBMIN_FUNC_ATTRIBS LIBMIN_UINT msqrti(LIBMIN_UINT x)
+{
+	LIBMIN_UINT r = 1;
+	if(x==0)return 0;
+	/*get within a log2*/
+	while(r*r < x) r*=2;
+	/*Now start decrementing.*/
+	while(r*r > x) r--; 
+	return r;
+}
+#endif
+
+
 #ifndef LIBMIN_NO_FLOAT
 /*
 	FLOAT POINT UNIT STUFF!!!!
@@ -423,6 +454,31 @@ LIBMIN_FUNC_ATTRIBS LIBMIN_FLOAT matof(char*s){
 
 
 #ifdef LIBMIN_MODE_HEADER
+LIBMIN_FUNC_ATTRIBS LIBMIN_FLOAT mipow(LIBMIN_FLOAT x, LIBMIN_INT y);
+#else
+LIBMIN_FUNC_ATTRIBS LIBMIN_FLOAT mipow(LIBMIN_FLOAT x, LIBMIN_INT y)
+{
+	LIBMIN_FLOAT r = 1;
+	if(y == 0) return 1;
+	if(y>1)for(;y>0;y--) r*=x;
+	if(y<0)for(;y<0;y++) r/=x;
+	return r;
+}
+#endif
+
+
+#ifdef LIBMIN_MODE_HEADER
+LIBMIN_FUNC_ATTRIBS LIBMIN_FLOAT mupow(LIBMIN_FLOAT x, LIBMIN_UINT y);
+#else
+LIBMIN_FUNC_ATTRIBS LIBMIN_FLOAT mupow(LIBMIN_FLOAT x, LIBMIN_UINT y)
+{
+	LIBMIN_FLOAT r = 1;
+	for(;y>0;y--) r*=x;
+	return r;
+}
+#endif
+
+#ifdef LIBMIN_MODE_HEADER
 LIBMIN_FUNC_ATTRIBS void mftoa(char* dest, float value, LIBMIN_UINT after_decimal);
 #else
 LIBMIN_FUNC_ATTRIBS void mftoa(char* dest, float value, LIBMIN_UINT after_decimal){
@@ -438,29 +494,34 @@ LIBMIN_FUNC_ATTRIBS void mftoa(char* dest, float value, LIBMIN_UINT after_decima
 	}
 #endif
 	/*Determine the highest power of 10.*/
-	{ LIBMIN_FLOAT pow = 1;
-		while((value/pow) >= 10) pow *= 10;
+	{ 
+		LIBMIN_INT pow10 = 0;
+		{
+			LIBMIN_FLOAT pow = 1;
+			while((value/pow) >= 10) {pow *= 10;pow10++;}
+		}
 		/*found the highest power of 10*/
-		while(pow >= 1){
-			LIBMIN_INT temp = value/pow; /*if we had the number 137.45, we would have gotten
+		while(pow10 >= 0){
+			LIBMIN_INT temp = value/mupow(10,pow10); /*if we had the number 137.45, we would have gotten
 			100 as our pow. We now divide by it to get the highest digit.*/
 			*dest = ( (LIBMIN_INT)temp + ('0')); dest++;
 			/*we now subtract off the 100 from 137.45 to get 37.45*/
-			value = value - ((LIBMIN_FLOAT)temp * (LIBMIN_FLOAT)pow); /*Get rid of the highest digit.*/
-			pow /= 10; /*Divide pow by 10.*/
+			value = value - (
+				(LIBMIN_FLOAT)temp * mupow(10,pow10)
+			); /*Get rid of the highest digit.*/
+			pow10--; /*Divide pow by 10.*/
 		}
 		/*Now print the insignificant portion.*/
 		if(value == 0) {goto end;}
 		*dest = '.';dest++;
-		{LIBMIN_UINT i=0;while(i<after_decimal){
+		{while(after_decimal){
 			LIBMIN_INT temp;
 			value *= 10;
 			temp = value;
 			*dest = ( (LIBMIN_INT)temp + ('0')); dest++;
 			value -= temp;
-			i++;
+			after_decimal--;
 		}}
-		/*Write the number out.*/
 	}
 	end:;
 	*dest = '\0'; return;
