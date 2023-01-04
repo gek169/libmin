@@ -110,6 +110,29 @@ LIBMIN_FUNC_ATTRIBS void mstrncpy(char* d, const char* s, LIBMIN_UINT n){
 #endif
 
 
+
+#ifdef LIBMIN_MODE_HEADER
+LIBMIN_FUNC_ATTRIBS void mstrncat(char* d, const char* s, LIBMIN_UINT n);
+#else
+LIBMIN_FUNC_ATTRIBS void mstrncat(char* d, const char* s, LIBMIN_UINT n){
+	while(*d && n){
+		d++;n--;
+	}
+	if(n==0) return;
+	mstrncpy(d,s,n);
+}
+#endif
+
+#ifdef LIBMIN_MODE_HEADER
+LIBMIN_FUNC_ATTRIBS void mstrcat(char* d, const char* s);
+#else
+LIBMIN_FUNC_ATTRIBS void mstrcat(char* d, const char* s){
+	while(*d){d++;}
+	/*reached null terminator*/
+	mstrcpy(d,s);
+}
+#endif
+
 #ifdef LIBMIN_MODE_HEADER
 LIBMIN_FUNC_ATTRIBS void mmemcpy(char* d, const char* s, LIBMIN_UINT size);
 #else
@@ -147,9 +170,9 @@ LIBMIN_FUNC_ATTRIBS char misdigit(const char s){
 
 
 #ifdef LIBMIN_MODE_HEADER
-LIBMIN_FUNC_ATTRIBS char misoctal(const char s);
+LIBMIN_FUNC_ATTRIBS char misoct(const char s);
 #else
-LIBMIN_FUNC_ATTRIBS char misoctal(const char s){
+LIBMIN_FUNC_ATTRIBS char misoct(const char s){
 	if(s >= '0')
 		if(s <= '7')
 			return 1;
@@ -197,7 +220,7 @@ LIBMIN_FUNC_ATTRIBS LIBMIN_UINT matou(const char* s){
 	
 	octal:s++;
 	if(*s == 'x' || *s == 'X') goto hex;
-	while(*s && misoctal(*s)){
+	while(*s && misoct(*s)){
 		retval *= 8;
 		retval += (LIBMIN_UINT)((*s) - ('0'));
 		s++;
