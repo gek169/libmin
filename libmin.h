@@ -91,6 +91,7 @@ LIBMIN_FUNC_ATTRIBS void mstrcpy(char* d, const char* s){
 		s++;
 		d++;
 	}
+	*d = '\0';
 }
 #endif
 
