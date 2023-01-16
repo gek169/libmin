@@ -42,8 +42,19 @@ int main(int argc, char** argv){
 	u = msqrti(u);
 	mutoa(buf,u);
 	printf("\r\nsqrti:%s",buf);
+
 	if(argc < 3) return 1;
-	
+	a = mstrcmp(argv[1],argv[2]);
+	if(a == 0){
+		puts("The two strings are identical.");
+	}
+	if(a < 0){
+		puts("The first string is alphabetically first.");
+	}
+	if(a > 0 ){
+		puts("The second string is alphabetically first.");
+	}
+	puts("\n");
 	mmemset(buf, 0, 1024);
 	mmemset(buf, 'q', matou(argv[2]) % 1024);
 	printf("\r\nthis should be %ld q's:%s",matou(argv[2]) % 1024,buf);

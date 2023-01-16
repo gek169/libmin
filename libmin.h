@@ -94,6 +94,20 @@ LIBMIN_FUNC_ATTRIBS void mstrcpy(char* d, const char* s){
 }
 #endif
 
+#ifdef LIBMIN_MODE_HEADER
+LIBMIN_FUNC_ATTRIBS LIBMIN_INT mstrcmp(char* d, const char* s);
+#else
+LIBMIN_FUNC_ATTRIBS LIBMIN_INT mstrcmp(char* d, const char* s){
+	while(*s == *d)
+	{
+		if(*s == '\0') return 0;
+		s++;
+		d++;
+	}
+	return (LIBMIN_INT)(*d) - (LIBMIN_INT)(*s);
+}
+#endif
+
 
 #ifdef LIBMIN_MODE_HEADER
 LIBMIN_FUNC_ATTRIBS void mstrncpy(char* d, const char* s, LIBMIN_UINT n);
